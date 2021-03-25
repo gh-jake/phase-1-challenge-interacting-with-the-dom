@@ -1,77 +1,94 @@
-document.addEventListener("DOMContentLoaded", () => {
-    // your code here
-    const counter = document.getElementById("counter");
-    let seconds = 0;
-    function incrementSeconds() {
-        seconds += 1;
-        counter.innerText = seconds;
+const counter = document.getElementById("counter");
+const minusButton = document.getElementById("minus");
+const plusButton = document.getElementById("plus");
+const pauseButton = document.getElementById("pause");
+const heartButton = document.getElementById("heart");
+const commentForm = document.getElementById("comment-form");
+const restartButton = document.getElementById("restart");
+let timer = setInterval(increaseCounter, 1000);
+
+restartButton.style.visibility = "hidden";
+restartButton.disabled = true;
+
+function increaseCounter() {
+    counter.innerText = parseInt(counter.innerText) + 1;
+}
+function decreaseCounter() {
+    counter.innerText = parseInt(counter.innerText) - 1;
+}
+
+plusButton.addEventListener("click", () => {
+    increaseCounter();
+});
+
+minusButton.addEventListener("click", () => {
+    decreaseCounter();
+});
+
+pauseButton.addEventListener("click", () => {
+    if (pauseButton.innerText === "pause") {
+        clearInterval(timer);
+        pauseButton.innerText = "resume";
+        heartButton.style.visibility = "hidden";
+        minusButton.style.visibility = "hidden";
+        plusButton.style.visibility = "hidden";
+        restartButton.style.visibility = "visible";
+        restartButton.disabled = false;
     }
-    const interval = setInterval(incrementSeconds, 1000);
+    else {
+        timer = setInterval(increaseCounter, 1000);
+        pauseButton.innerText = "pause";
+        heartButton.style.visibility = "visible";
+        minusButton.style.visibility = "visible";
+        plusButton.style.visibility = "visible";
+        restartButton.style.visibility = "hidden";
+        restartButton.disabled = true;
+    }
+});
 
-    const pauseButton = document.getElementById("pause");
-    let isPause = false;
-    pauseButton.addEventListener("click", function(event) {
-        event.preventDefault();
-        if (isPause === false) {
-            clearInterval(interval);
-            likeButton.style.visibility = "hidden";
-            minus.style.visibility = "hidden";
-            plus.style.visibility = "hidden";
-            pauseButton.innerText = "resume";
-            isPause = true;
-        }
-        else { //if button is resume
-            likeButton.style.visibility = "visible";
-            minus.style.visibility = "visible";
-            plus.style.visibility = "visible";
-            pauseButton.innerText = "pause";
-            isPause = false;
-        }
-    });
+let likesArray = [];
+let likesList = document.querySelector(".likes");
+heartButton.addEventListener("click", () => {
+    let currentNum = counter.innerHTML;
+    if (likesArray[currentNum]) {
+        likesArray[currentNum] += 1;
+    }
+    else {
+        likesArray[currentNum] = 1;
+    }
+    let li = document.createElement("li");
+    li.id = currentNum;
 
-    const likeButton = document.getElementById("heart");
-    let howManyLikes = 0;
-    let listedNum;
-    likeButton.addEventListener("click", function(event) {
-        event.preventDefault();
+    let likeMessage = document.createTextNode(`${currentNum}: ${likesArray[currentNum]} likes`);
 
-        /*howManyLikes += 1;
-        const likeList = document.querySelector(".likes");
-        let currentSec = counter.innerText;
-        let li = document.createElement("li");
-        li.appendChild(document.createTextNode(currentSec + ": " + howManyLikes + " likes" ));
-        likeList.appendChild(li);
+    if (document.getElementById(currentNum)) {
+        document.getElementById(currentNum).remove();
+    }
+    li.appendChild(likeMessage);
+    likesList.appendChild(li);
 
-        
-        check if current sec is equal to sec of previous like
-        if number is new, add list item, set counter to one
-        if number is old, counter ++, update list item
-        */
-    });
+});
 
-    const minus = document.getElementById("minus");
-    minus.addEventListener("click", function(event) {
-        event.preventDefault();
-        seconds -= 1;
-        counter.innerText = seconds;
-    });
+restartButton.addEventListener("click", () => {
+    pauseButton.innerText = "pause";
+    heartButton.style.visibility = "visible";
+    minusButton.style.visibility = "visible";
+    plusButton.style.visibility = "visible";
+    restartButton.style.visibility = "hidden";
+    restartButton.disabled = true;
+    counter.innerText = 0;
+    timer = setInterval(increaseCounter, 1000);
+    commentList.innerHTML = " ";
+    likesList.innerHTML = " ";
+});
 
-    const plus = document.getElementById("plus");
-    plus.addEventListener("click", function(event) {
-        event.preventDefault();
-        seconds += 1;
-        counter.innerText = seconds;
-    });
+let commentList = document.getElementById("list");
 
-    const form = document.getElementById("comment-form");
-    form.addEventListener("submit", function(event) {
-      event.preventDefault();
-  
-      let inputValue = document.getElementById("comment-input").value;
-      let commentList = document.getElementById("list");
-      let li = document.createElement("li");
-      li.appendChild(document.createTextNode(inputValue));
-      commentList.appendChild(li);  
-    });
-  
-  });
+commentForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    let comment = document.getElementById("comment-input").value;
+    let li = document.createElement("li");
+    li.appendChild(document.createTextNode(comment));
+    commentList.appendChild(li); 
+});
